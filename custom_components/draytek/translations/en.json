@@ -1,0 +1,80 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enable SNMP v2c on the router under System Maintenance > SNMP.",
+        "data": {
+          "host": "Host",
+          "community": "Community",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "Hostname or IP address of the router.",
+          "community": "SNMP read community configured on the router.",
+          "port": "SNMP port, usually 161."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "interface_link": {
+        "name": "{interface} link"
+      }
+    },
+    "sensor": {
+      "last_restart": {
+        "name": "Last restart"
+      },
+      "cpu_load": {
+        "name": "CPU load"
+      },
+      "memory_usage": {
+        "name": "Memory usage"
+      },
+      "dsl_downstream_rate": {
+        "name": "DSL downstream rate"
+      },
+      "dsl_upstream_rate": {
+        "name": "DSL upstream rate"
+      },
+      "dsl_downstream_attainable_rate": {
+        "name": "DSL downstream attainable rate"
+      },
+      "dsl_upstream_attainable_rate": {
+        "name": "DSL upstream attainable rate"
+      },
+      "dsl_downstream_snr_margin": {
+        "name": "DSL downstream SNR margin"
+      },
+      "dsl_upstream_snr_margin": {
+        "name": "DSL upstream SNR margin"
+      },
+      "dsl_downstream_attenuation": {
+        "name": "DSL downstream attenuation"
+      },
+      "dsl_upstream_attenuation": {
+        "name": "DSL upstream attenuation"
+      },
+      "interface_received": {
+        "name": "{interface} received"
+      },
+      "interface_sent": {
+        "name": "{interface} sent"
+      },
+      "interface_rx_rate": {
+        "name": "{interface} receive rate"
+      },
+      "interface_tx_rate": {
+        "name": "{interface} transmit rate"
+      }
+    }
+  }
+}
