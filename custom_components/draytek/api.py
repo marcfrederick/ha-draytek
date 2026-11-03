@@ -139,6 +139,7 @@ class DraytekClient:
         self._engine = engine
         self._host = host
         self._port = port
+        # Vigor 165/166 firmware only supports SNMP v1/v2c
         self._auth = CommunityData(community, mpModel=1)
         self._target: UdpTransportTarget | None = None
 
