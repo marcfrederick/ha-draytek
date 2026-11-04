@@ -6,10 +6,19 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
-from homeassistant.const import CONF_HOST, CONF_PORT
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlowWithReload,
+)
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
+from homeassistant.core import callback
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     TextSelector,
     TextSelectorConfig,
     TextSelectorType,
@@ -17,7 +26,15 @@ from homeassistant.helpers.selector import (
 
 from . import async_create_client
 from .api import DraytekError
-from .const import CONF_COMMUNITY, DEFAULT_COMMUNITY, DEFAULT_PORT, DOMAIN
+from .const import (
+    CONF_COMMUNITY,
+    DEFAULT_COMMUNITY,
+    DEFAULT_PORT,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,11 +50,33 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     }
 )
 
+OPTIONS_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): vol.All(
+            NumberSelector(
+                NumberSelectorConfig(
+                    min=MIN_SCAN_INTERVAL,
+                    max=MAX_SCAN_INTERVAL,
+                    unit_of_measurement="s",
+                    mode=NumberSelectorMode.BOX,
+                )
+            ),
+            vol.Coerce(int),
+        ),
+    }
+)
+
 
 class DraytekConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for DrayTek."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> DraytekOptionsFlow:
+        """Create the options flow."""
+        return DraytekOptionsFlow()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -73,4 +112,22 @@ class DraytekConfigFlow(ConfigFlow, domain=DOMAIN):
                 STEP_USER_DATA_SCHEMA, user_input
             ),
             errors=errors,
+        )
+
+
+class DraytekOptionsFlow(OptionsFlowWithReload):
+    """Handle DrayTek options."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=self.add_suggested_values_to_schema(
+                OPTIONS_SCHEMA, self.config_entry.options
+            ),
         )

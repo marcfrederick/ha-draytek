@@ -8,12 +8,13 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
 from .api import DraytekClient, DraytekData, DraytekError
-from .const import DOMAIN, SCAN_INTERVAL
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,7 +73,9 @@ class DraytekCoordinator(DataUpdateCoordinator[DraytekState]):
             _LOGGER,
             config_entry=entry,
             name=DOMAIN,
-            update_interval=SCAN_INTERVAL,
+            update_interval=timedelta(
+                seconds=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            ),
         )
         self.client = client
         self._samples: dict[int, _CounterSample] = {}

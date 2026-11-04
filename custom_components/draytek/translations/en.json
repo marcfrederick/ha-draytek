@@ -23,6 +23,18 @@
       "already_configured": "Device is already configured"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Update interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll the router, in seconds."
+        }
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "interface_link": {
